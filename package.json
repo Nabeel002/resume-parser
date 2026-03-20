@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "install": "^0.13.0",
+    "jsonwebtoken": "^9.0.3",
+    "npm": "^11.12.0"
+  }
+}

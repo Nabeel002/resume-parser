@@ -1,15 +1,14 @@
 const express = require('express');
 const app = express();
+app.use(express.json())
 const connectDB = require('./config/db')
-
+const authRoutes = require('./routes/auth.routes')
 
 connectDB()
 
 const port = 4000;
 
-app.get('/',(req, res)=>{
-    res.send('hello world')
-})
+app.use('/api/auth', authRoutes)
 
 
 app.listen(port, ()=>{
