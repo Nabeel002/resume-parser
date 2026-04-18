@@ -1,19 +1,24 @@
 const User = require('../models/user.model');
 const bcrypt = require('bcrypt');
-
+const { generateAccessToken, generateRefreshToken } = require('../utils/tokens');
 const jwt = require('jsonwebtoken');
 
-exports.signup = async ({email, password})=>{
-    const exisitingUser = User.findOne({email});
+exports.signup = async ({ email, userName, password })=>{
+    const exisitingUser = await User.findOne({ email });
+    const exisitingUserName = await User.findOne({ userName });
+
+    if(exisitingUserName){
+        throw new Error('Username already exist')
+    }
 
     if(exisitingUser){
         throw new Error('User already exist')
     }
 
-    // hash Passowrd
     const hashPassword = await bcrypt.hash(password, 10);
     const user = await User.create({
         email,
+        userName,
         password:hashPassword
     })
 
@@ -30,11 +35,13 @@ exports.login = async ({ email, password }) => {
   const isMatch = await bcrypt.compare(password, user.password)
   if (!isMatch) throw new Error('Invalid credentials')
 
-  const token = jwt.sign(
-    { id: user._id, email: user.email },
-    process.env.JWT_SECRET,
-    { expiresIn: '1h' }
-  )
 
-  return token
+  const token = generateAccessToken(user);
+  const refreshToken = generateRefreshToken(user);
+
+  user.refreshToken = refreshToken
+  await user.save()
+
+
+  return {token, refreshToken}
 }

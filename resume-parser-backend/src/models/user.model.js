@@ -9,10 +9,17 @@ const userSchema = new mongoose.Schema({
         lowercase:true,
         trim:true
     },
+    userName:{
+        type:String,
+        required:true
+    },
     password:{
         type:String,
         required:true,
         minlength:6
+    },
+    refreshToken:{
+        type:String
     }
 })
 
