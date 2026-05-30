@@ -1,6 +1,17 @@
 import React from 'react'
+type InputProps = {
+  label?: string;
+  placeholder?: string;
+  type?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+};
 
-const Input = ({label="text",  placeholder="text", onChange, type="text"}) => {
+const Input = ({
+  label = "text",
+  placeholder = "text",
+  onChange,
+  type = "text",
+}: InputProps) => {
   return (
     <>
       <label className="block text-sm font-medium text-gray-300">
