@@ -49,6 +49,7 @@ const page = () => {
       }
     } catch (error: any) {
       setFormErr(error.message);
+      setLoading(false)
       console.warn(error.message);
     }
   };
@@ -61,14 +62,14 @@ const page = () => {
             label: "Email",
             placeholder: "Enter email",
             type: "email",
-            value: "email",
+            value: "",
             setter: setEmail,
           },
           {
-            label: "Email",
-            placeholder: "Enter email",
-            type: "email",
-            value: "email",
+            label: "Password",
+            placeholder: "Enter Password",
+            type: "password",
+            value: "",
             setter: setPassword,
           },
         ]}
