@@ -1,17 +1,18 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
+import { clearCredentials } from "@/store/features/auth/authSlice";
+import { apiFetch } from "../lib/api";
 
 export default function LogoutButton() {
   const router = useRouter();
-  const apiEndPoint = process.env.NEXT_PUBLIC_API_ENDPOINT;
-  const handleLogout = async () => {
-    await fetch(`${apiEndPoint}/api/auth/logout`, {
-      method: "POST",
-      credentials: "include",
-    });
+  const dispatch = useDispatch();
 
-    router.refresh();
+  const handleLogout = async () => {
+    await apiFetch("/api/auth/logout", { method: "POST" });
+    dispatch(clearCredentials());
+    router.push("/");
   };
 
   return (

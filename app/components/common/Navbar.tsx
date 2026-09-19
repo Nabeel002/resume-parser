@@ -1,32 +1,10 @@
-import { cookies } from "next/headers";
+"use client";
+
+import { useSelector } from "react-redux";
 import LogoutButton from "../Logout";
 
-async function getUser() {
-  const cookieStore = await cookies();
-  const apiEndPoint = process.env.NEXT_PUBLIC_API_ENDPOINT;
-  const response = await fetch(
-    `${apiEndPoint}/api/user/profile`,
-    {
-      headers: {
-        Cookie: cookieStore.toString(),
-      },
-      cache: "no-store",
-    }
-  );
-
-  if (!response.ok) return null;
-
-  const data = await response.json();
-
-
-  return data.user;
-}
-
-
-
-
-export default async function Navbar() {
-  const user = await getUser();
+export default function Navbar() {
+  const user = useSelector((s: any) => s.auth.user);
 
   return (
     <header className="flex items-center justify-between px-6 py-4 mx-auto fixed top-0 bg-white z-50 shadow-sm w-full">
@@ -37,7 +15,6 @@ export default async function Navbar() {
       {user?.userName ? (
         <div className="flex items-center gap-4">
           <p>{user.userName}</p>
-
           <LogoutButton />
         </div>
       ) : (

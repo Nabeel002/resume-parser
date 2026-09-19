@@ -33,8 +33,8 @@ const AuthForm = ({
   title = "Sign in to your account",
   buttonText = "Sign In",
   footerText = "Don't have an account?",
-  footerLinkText = "Register",
-  footerLink = "/register",
+  footerLinkText = "Signup",
+  footerLink = "/signup",
 }: AuthFormProps) => {
   return (
     <div className="min-h-[100vh] flex items-center justify-center bg-black px-6 lg:px-8">

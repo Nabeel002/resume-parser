@@ -1,13 +1,13 @@
 "use client";
 
 import React, { useState } from "react";
+import { apiFetch } from "../lib/api";
 
 const Page = () => {
   const [file, setFile] = useState<File | null>(null);
   const [jobDescription, setJobDescription] = useState("");
-  const [latex, setLatex] = useState("");
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const apiEndPoint = process.env.NEXT_PUBLIC_API_ENDPOINT;
 
   const handleUpload = async () => {
     try {
@@ -24,18 +24,21 @@ const Page = () => {
         jobDescription
       );
 
-      const response = await fetch(
-        `${apiEndPoint}/api/resume/upload`,
+      const response = await apiFetch(
+        "/api/resume/upload",
         {
           method: "POST",
-          credentials: "include",
           body: formData,
         }
       );
 
-      const data = await response.json();
+      const blob = await response.blob();
 
-      setLatex(data.optimizedResume);
+      if (pdfUrl) {
+        URL.revokeObjectURL(pdfUrl);
+      }
+
+      setPdfUrl(URL.createObjectURL(blob));
 
     } catch (error) {
       console.error(error);
@@ -55,13 +58,13 @@ const Page = () => {
           </div>
 
           <h1 className="text-4xl font-bold tracking-tight md:text-5xl">
-            Generate ATS Optimized Resume LaTeX
+            Generate ATS Optimized Resume PDF
           </h1>
 
           <p className="max-w-2xl text-zinc-400">
             Upload your resume and paste the job description.
             AI will generate a professional ATS-friendly
-            LaTeX resume template.
+            PDF resume.
           </p>
         </div>
 
@@ -150,38 +153,37 @@ const Page = () => {
             <div className="flex items-center justify-between border-b border-zinc-800 px-6 py-4">
               <div>
                 <h2 className="text-lg font-semibold">
-                  Generated LaTeX
+                  Generated Resume
                 </h2>
 
                 <p className="text-sm text-zinc-500">
-                  ATS optimized LaTeX resume output
+                  ATS optimized PDF resume output
                 </p>
               </div>
 
-              {latex && (
-                <button
-                  onClick={() =>
-                    navigator.clipboard.writeText(
-                      latex
-                    )
-                  }
+              {pdfUrl && (
+                <a
+                  href={pdfUrl}
+                  download="optimized-resume.pdf"
                   className="rounded-xl border border-zinc-700 px-4 py-2 text-sm text-zinc-300 transition hover:bg-zinc-800"
                 >
-                  Copy
-                </button>
+                  Download
+                </a>
               )}
             </div>
 
-            {/* Code Block */}
+            {/* PDF Viewer */}
             <div className="h-[750px] overflow-auto bg-black p-6">
 
-              {latex ? (
-                <pre className="whitespace-pre-wrap break-words font-mono text-sm leading-7 text-green-400">
-                  {latex}
-                </pre>
+              {pdfUrl ? (
+                <iframe
+                  src={pdfUrl}
+                  title="Optimized Resume"
+                  className="h-full w-full"
+                />
               ) : (
                 <div className="flex h-full items-center justify-center text-zinc-600">
-                  Your generated LaTeX resume will appear here
+                  Your generated PDF resume will appear here
                 </div>
               )}
 

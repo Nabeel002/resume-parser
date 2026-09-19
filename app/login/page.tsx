@@ -4,6 +4,7 @@ import AuthForm from "../forms/AuthForm";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "../../store/features/auth/authSlice";
+import { apiFetch } from "../lib/api";
 const page = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -20,33 +21,23 @@ const page = () => {
         email: email,
         password: password,
       };
-      const apiEndPoint = process.env.NEXT_PUBLIC_API_ENDPOINT;
 
       setLoading(true);
-      let response = await fetch(`${apiEndPoint}/api/auth/login`, {
+      let response = await apiFetch(`/api/auth/login`, {
         method: "POST",
         body: JSON.stringify(payload),
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
       });
       const data = await response.json();
-      dispatch(setCredentials({ user: data.user, token: data.token }));
-      setLoading(false);
-
+      
       if (!response.ok) {
         throw new Error(data.message || "Login failed");
       }
+      dispatch(setCredentials({ user: data.user}));
+      setLoading(false);
+      router.refresh();  
+      router.push("/dashboard");
 
-      if (response.status === 200) {
-        dispatch(setCredentials({ user: data.user, token: data.token }));
-        router.refresh();  
-        setEmail("");
-        setPassword("");
-        setFormErr("");
-        router.push("/dashboard");
-      }
+ 
     } catch (error: any) {
       setFormErr(error.message);
       setLoading(false)
